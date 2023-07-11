@@ -11,6 +11,7 @@ import '../../../../../core/helpers/blocHelper.dart';
 import '../../domain/entities/video.dart';
 import '../bloc/video_bloc.dart';
 import '../widgets/cameraScreen.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 class VideoPage extends StatefulWidget {
   const VideoPage({Key? key}) : super(key: key);
@@ -34,105 +35,88 @@ class _VideoPageState extends State<VideoPage> {
   @override
   Widget build(BuildContext context) {
     var bloc = context.read<VideoBloc>();
-    int nextIndex = 0;
     return Scaffold(
-      appBar: AppBar(title: const Text('Video CRUD')),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-            child: BlocBuilder<VideoBloc, VideoState>(
+      appBar: AppBar(title:  Text('Video CRUD',style: context.textTheme.headlineMedium,),elevation: 0,backgroundColor: Colors.white),
+      body: Container(
+        color: Colors.white,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+              child: BlocBuilder<VideoBloc, VideoState>(
+                builder: (context, state) {
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: BlocBuilder<VideoBloc, VideoState>(
+                          builder: (context, state) {
+                            return Text(
+                              state.videos.isNotEmpty ? 'Manage videos' : 'Add New Video..',
+                              style: context.textTheme.labelLarge,
+                            );
+                          },
+                        ),
+                      ),
+                      state.videos.isNotEmpty
+                          ? Center(
+                              child: IconButton(
+                                onPressed: () => bloc.add(const ClearAllDataEvent()),
+                                icon: const Icon(Icons.refresh),
+                              ),
+                            )
+                          : Wrap(),
+                    ],
+                  );
+                },
+              ),
+            ),
+            BlocConsumer<VideoBloc, VideoState>(
+              bloc: context.read<VideoBloc>(),
+              listener: (context, VideoState state) {
+                if (state.action == BlocAction.launchCamera) {
+                  launchCamera(context);
+                } else if (state.action == BlocAction.launchFileManager) {
+                  launchFileManager();
+                }
+              },
               builder: (context, state) {
-                return
-                     Row(
-                        children: [
-                          Expanded(
-                            child: BlocBuilder<VideoBloc, VideoState>(
-                              builder: (context, state) {
-                                return Text(
-                                  state.videos.isNotEmpty ? 'Manage videos' : 'Add New Video..',
-                                  style: context.textTheme.headlineSmall,
-                                );
-                              },
-                            ),
-                          ),
-                          state.videos.isNotEmpty
-                              ? Center(
-                                  child: IconButton(
-                                    onPressed: () => bloc.add(const ClearAllDataEvent()),
-                                    icon: const Icon(Icons.refresh),
-                                  ),
-                                )
-                              : Wrap(),
-                        ],
-                      );
+                return Expanded(
+                  child: GridView.builder(
+                    itemCount: state.videos.length,
+                    itemBuilder: (context, index) => videoListItem(state.videos[index], context, index),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                  ),
+                );
               },
             ),
-          ),
-          BlocConsumer<VideoBloc, VideoState>(
-            bloc: context.read<VideoBloc>(),
-            listener: (context, VideoState state) {
-              if(state.action==BlocAction.launchCamera) {
-                launchCamera(context);
-              } else if(state.action == BlocAction.launchFileManager){
-                launchFileManager();
-              }
-            },
-            builder: (context, state) {
-              return Expanded(
-                child: ListView.builder(
-                  itemCount: state.videos.length,
-                  itemBuilder: (context, index) => buildVideoList(state.videos[index], context, index),
-                ),
-              );
-            },
-          ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: const FlowMenu(),
     );
   }
 
-  buildVideoList(VideoModel Video, BuildContext context, index) {
+  videoListItem(VideoModel Video, BuildContext context, index) {
     TextEditingController controller = TextEditingController();
     return BlocBuilder<VideoBloc, VideoState>(
       builder: (context, state) {
         // print('VideoPage.buildVideoList ${state.editIndex}');
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
+          child: Stack(
             children: [
-              Expanded(
-                child:Video.id == state.editVideoId
-                    ? Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: controller,
-                        ),
-                      )
-                    : Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(Video.title.toString()),
-                      ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.file(Video.thumbnail!),
               ),
-              Video.id == state.editVideoId
-                  ? Wrap()
-                  : IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () => context.read<VideoBloc>().add(
-                            EditVideoShowTextField(
-                              VideoId: Video.id!,
-                            ),
-                          ),
-                    ),
-               Video.id == state.editVideoId
-                  ? Wrap()
-                  : IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () => context.read<VideoBloc>().add(RemoveVideoEvent(Video: Video)),
-                    ),
-
+              Positioned(
+                right: -5,
+                top: -5,
+                child: IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () => context.read<VideoBloc>().add(RemoveVideoEvent(Video: Video)),
+                ),
+              ),
             ],
           ),
         );
@@ -141,13 +125,26 @@ class _VideoPageState extends State<VideoPage> {
   }
 
   void launchCamera(BuildContext context) {
-    context.push(const CameraScreen()).then((value) {
+    var bloc = context.read<VideoBloc>();
+    context.push(const CameraScreen()).then((value) async {
       debugPrint('starting method getting value $value');
       if (value != null) {
         debugPrint('value ${value}');
-        File? image=File(value);
-
-
+        File? file = File(value);
+        final thumbnailFile = await VideoThumbnail.thumbnailFile(
+          video: value,
+          imageFormat: ImageFormat.JPEG,
+          maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+          quality: 25,
+        );
+        bloc.add(VideoAddEvent(
+            Video: VideoModel(
+          file: file,
+          id: bloc.state.videos.length,
+          thumbnail: File(thumbnailFile!),
+          description: '',
+          title: '',
+        )));
 
         // compressFile(File(value)).then((compressedImage) {
         //   debugPrint('original file ${File(value).lengthSync()}');
@@ -162,6 +159,7 @@ class _VideoPageState extends State<VideoPage> {
       debugPrint(error.toString());
     });
   }
+
   Future<File?> compressFile(File file) async {
     Random random = Random();
     int randomNumber = random.nextInt(100);
@@ -176,7 +174,6 @@ class _VideoPageState extends State<VideoPage> {
     );
     return result;
   }
-
 
   void launchFileManager() {}
 }

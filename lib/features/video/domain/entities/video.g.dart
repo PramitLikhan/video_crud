@@ -21,8 +21,8 @@ class VideoModelAdapter extends TypeAdapter<VideoModel> {
       id: fields[0] as int,
       title: fields[1] as String,
       description: fields[2] as String,
-      file: fields[3] as String,
-      thumbnail: fields[4] as String,
+      file: fields[3] as File,
+      thumbnail: fields[4] as File,
     );
   }
 

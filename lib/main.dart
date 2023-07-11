@@ -38,6 +38,7 @@ class MyApp extends StatelessWidget {
       create: (context) => VideoBloc(),
       child: MaterialApp(
         title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
