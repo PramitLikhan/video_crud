@@ -75,7 +75,7 @@ class _VideoPageState extends State<VideoPage> {
                                 ),
                               ),
                             )
-                          : const Wrap(),
+                          :  Wrap(),
                     ],
                   );
                 },
@@ -105,6 +105,7 @@ class _VideoPageState extends State<VideoPage> {
         ),
       ),
       floatingActionButton: const FlowMenu(),
+
     );
   }
 
@@ -125,13 +126,16 @@ class _VideoPageState extends State<VideoPage> {
                 curve: Curves.fastOutSlowIn,
                 colorChangeAnimationCurve: Curves.easeInCubic,
               ),
-              badgeStyle: const badges.BadgeStyle(shape: badges.BadgeShape.square),
+              badgeStyle: const badges.BadgeStyle(shape: badges.BadgeShape.circle),
               position: badges.BadgePosition.topEnd(end: 8, top: 10),
               child: InkWell(
                 onTap: () => context.push(VideoDetailsPage(index: index)),
-                child: Image.file(
-                  File(video.thumbnail!),
-                  fit: BoxFit.fitWidth,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.file(
+                    File(video.thumbnail!),
+                    fit: BoxFit.fitWidth,
+                  ),
                 ),
               )),
         );

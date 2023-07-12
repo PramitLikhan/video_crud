@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -20,6 +21,8 @@ class _VideoDetailsPageState extends State<VideoDetailsPage> {
   late VideoPlayerController _controller;
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
+  late Timer _timer;
+  Duration _position = Duration.zero;
 
   @override
   void initState() {
@@ -31,6 +34,13 @@ class _VideoDetailsPageState extends State<VideoDetailsPage> {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {});
       });
+    _timer = Timer.periodic(Duration(milliseconds: 500), (_) {
+      if (_controller.value.isPlaying) {
+        setState(() {
+          _position = _controller.value.position;
+        });
+      }
+    });
   }
 
   @override
@@ -66,22 +76,34 @@ class _VideoDetailsPageState extends State<VideoDetailsPage> {
                           },
                         ),
                         Center(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: _controller.value.isPlaying ? Colors.transparent : Colors.white54,
-                            ),
-                            child: Icon(
-                              _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-                              color: _controller.value.isPlaying ? Colors.transparent : Colors.black,
-                              size: 45,
+                          child: IgnorePointer(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: _controller.value.isPlaying ? Colors.transparent : Colors.white54,
+                              ),
+                              child: Icon(
+                                _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                                color: _controller.value.isPlaying ? Colors.transparent : Colors.black,
+                                size: 45,
+                              ),
                             ),
                           ),
                         ),
                       ],
                     ),
                   )
-                : Container(),
+                : Container(
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+            // Text(getVideoPosition(_controller)),
+            Text(
+              '${_printDuration(_controller.value.position)}/${getVideoDuration(_controller)}',
+              style: TextStyle(fontSize: 16.0),
+            ),
+            SizedBox(
+              height: 20,
+            ),
             BlocBuilder<VideoBloc, VideoState>(
               builder: (context, state) {
                 return Row(
@@ -148,5 +170,18 @@ class _VideoDetailsPageState extends State<VideoDetailsPage> {
         ),
       ),
     );
+  }
+
+  getVideoDuration(VideoPlayerController videoController) {
+    var duration = videoController.value.duration;
+    String durationString = [duration.inMinutes, duration.inSeconds].map((seg) => seg.remainder(60).toString().padLeft(2, '0')).join(':');
+    return '$durationString';
+  }
+
+  String _printDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return '$twoDigitMinutes:$twoDigitSeconds';
   }
 }

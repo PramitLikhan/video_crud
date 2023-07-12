@@ -59,7 +59,8 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
 
   clearAllData(ClearAllDataEvent event, Emitter<VideoState> emit) {
     VideoHiveService.db.removeData();
-    emit(state.copyWith(videos: [], action: BlocAction.unknown));
+    emit(state.copyWith(videos: [], action: BlocAction.removeItem));
+    emit(state.copyWith(action: BlocAction.unknown));
   }
 
   ///-------------------------------------------------------------------------------------------------------------------------------------------------------------------
