@@ -1,4 +1,3 @@
-
 part of 'video_bloc.dart';
 
 abstract class VideoEvent extends Equatable {
@@ -68,6 +67,43 @@ class LaunchCameraEvent extends VideoEvent {
 
 class LaunchFileManagerEvent extends VideoEvent {
   const LaunchFileManagerEvent();
+
+  @override
+  List<Object> get props => [];
+}
+
+class StartDetailsTitleEditEvent extends VideoEvent {
+  const StartDetailsTitleEditEvent();
+
+  @override
+  List<Object> get props => [];
+}
+
+class EndDetailsTitleEditEvent extends VideoEvent {
+  final VideoModel video;
+  const EndDetailsTitleEditEvent({required this.video});
+
+  @override
+  List<Object> get props => [];
+}
+
+class StartDetailsDescriptionEditEvent extends VideoEvent {
+  const StartDetailsDescriptionEditEvent();
+
+  @override
+  List<Object> get props => [];
+}
+
+class EndDetailsDescriptionEditEvent extends VideoEvent {
+  final VideoModel video;
+  const EndDetailsDescriptionEditEvent({required this.video});
+
+  @override
+  List<Object> get props => [];
+}
+
+class ResetStateEvent extends VideoEvent {
+  const ResetStateEvent();
 
   @override
   List<Object> get props => [];

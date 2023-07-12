@@ -1,4 +1,3 @@
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
@@ -18,9 +17,13 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
     on<VideoAddEvent>((event, emit) => addVideo(event, emit));
     on<EditVideoEvent>((event, emit) => editVideoEvent(event, emit));
     on<RemoveVideoEvent>((event, emit) => removeVideo(event, emit));
-    on<LaunchCameraEvent>((event, emit) => launchCamera(event,emit));
-    on<LaunchFileManagerEvent>((event, emit) => launchFileManager(event,emit));
-
+    on<LaunchCameraEvent>((event, emit) => launchCamera(event, emit));
+    on<LaunchFileManagerEvent>((event, emit) => launchFileManager(event, emit));
+    on<StartDetailsTitleEditEvent>((event, emit) => startDetailsTitleEditEvent(event, emit));
+    on<EndDetailsTitleEditEvent>((event, emit) => endDetailsTitleEditEvent(event, emit));
+    on<StartDetailsDescriptionEditEvent>((event, emit) => startDetailsDescriptionEditEvent(event, emit));
+    on<EndDetailsDescriptionEditEvent>((event, emit) => endDetailsDescriptionEditEvent(event, emit));
+    on<ResetStateEvent>((event, emit) => resetStateEvent(event, emit));
 
     ///-------------------------------------------------------------------------------------------------------------------------------------------------------------------
   }
@@ -35,6 +38,7 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
   addVideo(VideoAddEvent event, Emitter<VideoState> emit) {
     VideoHiveService.db.addVideo(event.Video);
     emit(state.copyWith(videos: List.from(state.videos)..add(event.Video), action: BlocAction.addItem));
+    emit(state.copyWith(action: BlocAction.unknown));
   }
 
   editVideoEvent(EditVideoEvent event, Emitter<VideoState> emit) {
@@ -48,9 +52,9 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
   removeVideo(RemoveVideoEvent event, Emitter<VideoState> emit) async {
     await VideoHiveService.db.deleteVideo(event.Video);
     List<VideoModel> list = List.from(state.videos)..removeAt(state.videos.indexOf(event.Video));
-    var action = state.action;
-    emit(state.copyWith(videos: list, action: BlocAction.unknown));
-    emit(state.copyWith(action: action));
+    // var action = state.action;
+    emit(state.copyWith(videos: list, action: BlocAction.removeItem));
+    emit(state.copyWith(action: BlocAction.unknown));
   }
 
   clearAllData(ClearAllDataEvent event, Emitter<VideoState> emit) {
@@ -62,8 +66,7 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
 
   ///UI related operations ==============================================================================================================================================
 
-  Future<void> showVideoAddDialog(ShowVideoAddDialogEvent event, Emitter<VideoState> emit) async =>
-      emit(state.copyWith(videos: state.videos, action: BlocAction.showDialog));
+  Future<void> showVideoAddDialog(ShowVideoAddDialogEvent event, Emitter<VideoState> emit) async => emit(state.copyWith(videos: state.videos, action: BlocAction.showDialog));
 
   launchFileManager(LaunchFileManagerEvent event, Emitter<VideoState> emit) {
     emit(state.copyWith(action: BlocAction.launchFileManager));
@@ -72,5 +75,29 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
   launchCamera(LaunchCameraEvent event, Emitter<VideoState> emit) {
     emit(state.copyWith(action: BlocAction.launchCamera));
   }
-///-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+  startDetailsTitleEditEvent(StartDetailsTitleEditEvent event, Emitter<VideoState> emit) => emit(state.copyWith(detailsState: VideoDetails.editTitle));
+
+  endDetailsTitleEditEvent(EndDetailsTitleEditEvent event, Emitter<VideoState> emit) {
+    state.videos[state.videos.indexWhere((element) => element.id == event.video.id)] = event.video;
+    VideoHiveService.db.editVideo(event.video);
+    emit(state.copyWith(videos: state.videos, detailsState: VideoDetails.unknown));
+    // var action = state.action;
+    // emit(state.copyWith(videos: state.videos, action: BlocAction.unknown, editVideoId: -1));
+    // emit(state.copyWith(action: action));
+  }
+
+  startDetailsDescriptionEditEvent(StartDetailsDescriptionEditEvent event, Emitter<VideoState> emit) => emit(state.copyWith(detailsState: VideoDetails.editDescription));
+
+  endDetailsDescriptionEditEvent(EndDetailsDescriptionEditEvent event, Emitter<VideoState> emit) {
+    state.videos[state.videos.indexWhere((element) => element.id == event.video.id)] = event.video;
+    VideoHiveService.db.editVideo(event.video);
+    emit(state.copyWith(videos: state.videos, detailsState: VideoDetails.unknown));
+  }
+
+  resetStateEvent(ResetStateEvent event, Emitter<VideoState> emit) {
+    emit(state.copyWith(action: BlocAction.unknown, detailsState: VideoDetails.unknown));
+  }
+
+  ///-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 }

@@ -6,7 +6,6 @@ part of 'video.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-
 class VideoModelAdapter extends TypeAdapter<VideoModel> {
   @override
   final int typeId = 1;
@@ -21,8 +20,8 @@ class VideoModelAdapter extends TypeAdapter<VideoModel> {
       id: fields[0] as int,
       title: fields[1] as String,
       description: fields[2] as String,
-      file: fields[3] as File,
-      thumbnail: fields[4] as File,
+      file: fields[3] as String,
+      thumbnail: fields[4] as String,
     );
   }
 
@@ -46,9 +45,5 @@ class VideoModelAdapter extends TypeAdapter<VideoModel> {
   int get hashCode => typeId.hashCode;
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is VideoModelAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+  bool operator ==(Object other) => identical(this, other) || other is VideoModelAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
 }

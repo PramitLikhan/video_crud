@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:hive/hive.dart';
+
 part 'video.g.dart';
 
 /// id : 1
@@ -17,15 +16,15 @@ class VideoModel {
   @HiveField(2)
   String? _description;
   @HiveField(3)
-  File? _file;
+  String? _file;
   @HiveField(4)
-  File? _thumbnail;
+  String? _thumbnail;
   VideoModel({
     int? id,
     String? title,
     String? description,
-    File? file,
-    File? thumbnail,
+    String? file,
+    String? thumbnail,
   }) {
     _id = id;
     _title = title;
@@ -46,8 +45,8 @@ class VideoModel {
     int? id,
     String? title,
     String? description,
-    File? file,
-    File? thumbnail,
+    String? file,
+    String? thumbnail,
   }) =>
       VideoModel(
         id: id ?? _id,
@@ -59,8 +58,8 @@ class VideoModel {
   int? get id => _id;
   String? get title => _title;
   String? get description => _description;
-  File? get file => _file;
-  File? get thumbnail => _thumbnail;
+  String? get file => _file;
+  String? get thumbnail => _thumbnail;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};

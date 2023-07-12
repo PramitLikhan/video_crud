@@ -12,3 +12,9 @@ enum BlocAction {
   launchCamera,
   launchFileManager,
 }
+
+enum VideoDetails {
+  unknown,
+  editTitle,
+  editDescription,
+}
