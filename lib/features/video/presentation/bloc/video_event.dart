@@ -27,8 +27,16 @@ class VideoAddEvent extends VideoEvent {
   List<Object> get props => [Video];
 }
 
-class ShowVideoAddDialogEvent extends VideoEvent {
-  const ShowVideoAddDialogEvent();
+class ShowDeleteDialogEvent extends VideoEvent {
+  const ShowDeleteDialogEvent({required this.deleteIndex});
+  final int deleteIndex;
+
+  @override
+  List<Object> get props => [];
+}
+
+class ShowDeleteAllDialogEvent extends VideoEvent {
+  const ShowDeleteAllDialogEvent();
 
   @override
   List<Object> get props => [];

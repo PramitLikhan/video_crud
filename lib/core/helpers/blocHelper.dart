@@ -1,6 +1,7 @@
 enum BlocAction {
   unknown,
-  showDialog,
+  showDeleteDialog,
+  showDeleteAllDialog,
   addItem,
   editItem,
   editItemShowTextField,

@@ -44,6 +44,12 @@ class _VideoDetailsPageState extends State<VideoDetailsPage> {
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var bloc = context.read<VideoBloc>();
     return Scaffold(
@@ -93,7 +99,8 @@ class _VideoDetailsPageState extends State<VideoDetailsPage> {
                       ],
                     ),
                   )
-                : Container(
+                : AspectRatio(
+                    aspectRatio: _controller.value.aspectRatio,
                     child: Center(child: CircularProgressIndicator()),
                   ),
             // Text(getVideoPosition(_controller)),
@@ -116,7 +123,7 @@ class _VideoDetailsPageState extends State<VideoDetailsPage> {
                           : Text(
                               bloc.state.videos[widget.index].title.toString() != '' && bloc.state.videos[widget.index].title != null
                                   ? bloc.state.videos[widget.index].title!
-                                  : 'Title is empty',
+                                  : 'Add a title',
                               style: context.textTheme.headlineMedium,
                             ),
                     ),
@@ -149,7 +156,7 @@ class _VideoDetailsPageState extends State<VideoDetailsPage> {
                             )
                           : Text(bloc.state.videos[widget.index].description.toString() != '' && bloc.state.videos[widget.index].description != null
                               ? bloc.state.videos[widget.index].description!
-                              : 'Description is empty'),
+                              : 'Add a description'),
                     ),
                     InkWell(
                         onTap: () {

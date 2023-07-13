@@ -5,16 +5,16 @@ class VideoState extends Equatable {
     this.videos = const [],
     this.action = BlocAction.unknown,
     this.detailsState = VideoDetails.unknown,
-    this.editVideoId = -1,
+    this.deleteIndex = -1,
   });
   final List<VideoModel> videos;
   final BlocAction? action;
   final VideoDetails? detailsState;
-  final int? editVideoId;
-  VideoState copyWith({List<VideoModel>? videos, BlocAction? action, int? editVideoId, VideoDetails? detailsState}) => VideoState(
+  final int? deleteIndex;
+  VideoState copyWith({List<VideoModel>? videos, BlocAction? action, VideoDetails? detailsState, int? deleteIndex}) => VideoState(
         videos: videos ?? this.videos,
         action: action ?? this.action,
-        editVideoId: editVideoId ?? this.editVideoId,
+        deleteIndex: deleteIndex ?? this.deleteIndex,
         detailsState: detailsState ?? this.detailsState,
       );
 
