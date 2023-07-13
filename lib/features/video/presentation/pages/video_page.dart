@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
@@ -84,6 +85,10 @@ class _VideoPageState extends State<VideoPage> {
                 },
               ),
             ),
+            BlocBuilder<VideoBloc, VideoState>(
+                builder: (context, state) => Container(
+                      child: state.videos.isEmpty ? Center(child: LottieBuilder.asset('assets/animation.json')) : Container(),
+                    )),
             BlocConsumer<VideoBloc, VideoState>(
               bloc: context.read<VideoBloc>(),
               listener: (context, VideoState state) {
@@ -152,35 +157,41 @@ class _VideoPageState extends State<VideoPage> {
               position: badges.BadgePosition.topEnd(end: 8, top: 10),
               child: InkWell(
                 onTap: () => context.push(VideoDetailsPage(index: index)),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Image.file(
-                        File(video.thumbnail!),
-                        fit: BoxFit.fitWidth,
-                      ),
-                      Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Colors.black45, Colors.transparent],
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                          ),
+                child: Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Image.file(
+                          File(video.thumbnail!),
+                          fit: BoxFit.fitWidth,
                         ),
-                        child: Align(
-                          alignment: Alignment.bottomRight,
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: Text(
-                              video.title!,
-                              style: context.textTheme.headlineSmall!.copyWith(color: Colors.white, overflow: TextOverflow.ellipsis),
+                        Container(
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [Colors.black45, Colors.transparent],
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
                             ),
                           ),
-                        ),
-                      )
-                    ],
+                          child: Align(
+                            alignment: Alignment.bottomRight,
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Text(
+                                video.title!,
+                                style: context.textTheme.headlineSmall!.copyWith(color: Colors.white, overflow: TextOverflow.ellipsis),
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               )),
@@ -221,7 +232,7 @@ class _VideoPageState extends State<VideoPage> {
         debugPrint('value ${value}');
         final thumbnailFile = await VideoThumbnail.thumbnailFile(
           video: value,
-          imageFormat: ImageFormat.JPEG,
+          imageFormat: ImageFormat.PNG,
           maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
           quality: 25,
         );

@@ -1,4 +1,4 @@
-import 'package:bloc/bloc.dart';
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,12 +6,10 @@ import 'package:video_crud/core/services/pageService/AppPages.dart';
 import 'package:video_crud/features/video/presentation/pages/video_page.dart';
 
 import 'core/app/app_observer.dart';
-
 import 'core/helpers/constants.dart';
 import 'core/services/hive/category/videoHiveService.dart';
 import 'core/services/hive/hive_service.dart';
 import 'features/video/presentation/bloc/video_bloc.dart';
-import 'package:camera/camera.dart';
 
 Future<void> main() async {
   Bloc.observer = AppObserver();
@@ -21,6 +19,7 @@ Future<void> main() async {
   ));
   await HiveService.hiveDbService.init();
   await VideoHiveService.db.initializeVideoService();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   try {
     cameras = await availableCameras();
   } on CameraException catch (e) {
@@ -48,5 +47,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-

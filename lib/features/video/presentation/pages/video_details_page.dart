@@ -34,7 +34,7 @@ class _VideoDetailsPageState extends State<VideoDetailsPage> {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {});
       });
-    _timer = Timer.periodic(Duration(milliseconds: 500), (_) {
+    _timer = Timer.periodic(const Duration(milliseconds: 500), (_) {
       if (_controller.value.isPlaying) {
         setState(() {
           _position = _controller.value.position;
@@ -101,14 +101,14 @@ class _VideoDetailsPageState extends State<VideoDetailsPage> {
                   )
                 : AspectRatio(
                     aspectRatio: _controller.value.aspectRatio,
-                    child: Center(child: CircularProgressIndicator()),
+                    child: const Center(child: CircularProgressIndicator()),
                   ),
             // Text(getVideoPosition(_controller)),
             Text(
               '${_printDuration(_controller.value.position)}/${getVideoDuration(_controller)}',
-              style: TextStyle(fontSize: 16.0),
+              style: const TextStyle(fontSize: 16.0),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             BlocBuilder<VideoBloc, VideoState>(
@@ -172,6 +172,10 @@ class _VideoDetailsPageState extends State<VideoDetailsPage> {
                   ],
                 );
               },
+            ),
+
+            const SizedBox(
+              height: 55,
             ),
           ],
         ),
