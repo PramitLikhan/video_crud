@@ -17,7 +17,7 @@ class AppPages {
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
             create: (context) => VideoBloc(),
-            child: VideoPage(),
+            child: const VideoPage(),
           ),
           settings: routeSettings,
         );
@@ -26,7 +26,7 @@ class AppPages {
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
             create: (context) => VideoBloc(),
-            child: VideoPage(),
+            child: const VideoPage(),
           ),
           settings: routeSettings,
         );
