@@ -46,6 +46,8 @@ class _VideoDetailsPageState extends State<VideoDetailsPage> {
   @override
   void dispose() {
     _controller.dispose();
+    titleController.dispose();
+    descriptionController.dispose();
     super.dispose();
   }
 
@@ -65,44 +67,56 @@ class _VideoDetailsPageState extends State<VideoDetailsPage> {
         padding: const EdgeInsets.all(8.0),
         child: ListView(
           children: [
-            _controller.value.isInitialized
-                ? AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: Stack(
-                      children: [
-                        InkWell(
-                          child: VideoPlayer(_controller),
-                          onTap: () async {
-                            if (_controller.value.isPlaying) {
-                              await _controller.pause();
-                            } else {
-                              await _controller.play();
-                            }
-                            setState(() {});
-                          },
-                        ),
-                        Center(
-                          child: IgnorePointer(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: _controller.value.isPlaying ? Colors.transparent : Colors.white54,
-                              ),
-                              child: Icon(
-                                _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-                                color: _controller.value.isPlaying ? Colors.transparent : Colors.black,
-                                size: 45,
+            Hero(
+              tag: bloc.state.videos[widget.index].id.toString(),
+              child: _controller.value.isInitialized
+                  ? AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: Stack(
+                        children: [
+                          InkWell(
+                            child: VideoPlayer(_controller),
+                            onTap: () async {
+                              if (_controller.value.isPlaying) {
+                                await _controller.pause();
+                              } else {
+                                await _controller.play();
+                              }
+                              setState(() {});
+                            },
+                          ),
+                          Center(
+                            child: IgnorePointer(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: _controller.value.isPlaying ? Colors.transparent : Colors.white54,
+                                ),
+                                child: Icon(
+                                  _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                                  color: _controller.value.isPlaying ? Colors.transparent : Colors.black,
+                                  size: 45,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
+                    )
+                  : AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Center(
+                            widthFactor: context.width,
+                            child: Image.file(File(bloc.state.videos[widget.index].thumbnail!)),
+                          ),
+                          const Center(child: CircularProgressIndicator()),
+                        ],
+                      ),
                     ),
-                  )
-                : AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: const Center(child: CircularProgressIndicator()),
-                  ),
+            ),
             // Text(getVideoPosition(_controller)),
             Text(
               '${_printDuration(_controller.value.position)}/${getVideoDuration(_controller)}',

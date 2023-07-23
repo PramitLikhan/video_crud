@@ -97,9 +97,12 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
   resetStateEvent(ResetStateEvent event, Emitter<VideoState> emit) => emit(state.copyWith(action: BlocAction.unknown, detailsState: VideoDetails.unknown, deleteIndex: -1));
 
   processCapturedVideoEvent(ProcessCapturedVideoEvent event, Emitter<VideoState> emit) {
-    IOHelper.io.createThumbnailFile(path: event.capturedVideoFile ?? '').then((value) => value != null
-        ? add(VideoAddEvent(Video: VideoModel(file: event.capturedVideoFile, id: state.videos.length, thumbnail: value, description: '', title: '')))
-        : add(const ResetStateEvent()));
+    IOHelper.io.createThumbnailFile(path: event.capturedVideoFile ?? '').then((value) {
+      if (value != null) {
+        add(VideoAddEvent(Video: VideoModel(file: event.capturedVideoFile, id: state.videos.length, thumbnail: value, description: '', title: '')));
+      }
+      add(const ResetStateEvent());
+    });
   }
 
   ///-------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -153,40 +153,43 @@ class _VideoPageState extends State<VideoPage> {
               position: badges.BadgePosition.topEnd(end: 8, top: 10),
               child: InkWell(
                 onTap: () => context.push(VideoDetailsPage(index: index)),
-                child: Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        Image.file(
-                          File(video.thumbnail!),
-                          fit: BoxFit.fitWidth,
-                        ),
-                        Container(
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Colors.black45, Colors.transparent],
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.topCenter,
-                            ),
+                child: Hero(
+                  tag: video.id.toString(),
+                  child: Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Image.file(
+                            File(video.thumbnail!),
+                            fit: BoxFit.fitWidth,
                           ),
-                          child: Align(
-                            alignment: Alignment.bottomRight,
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: Text(
-                                video.title!,
-                                style: context.textTheme.headlineSmall!.copyWith(color: Colors.white, overflow: TextOverflow.ellipsis),
+                          Container(
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [Colors.black45, Colors.transparent],
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter,
                               ),
                             ),
-                          ),
-                        )
-                      ],
+                            child: Align(
+                              alignment: Alignment.bottomRight,
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: Text(
+                                  video.title!,
+                                  style: context.textTheme.headlineSmall!.copyWith(color: Colors.white, overflow: TextOverflow.ellipsis),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),

@@ -39,6 +39,7 @@ class _FlowMenuState extends State<FlowMenu> with SingleTickerProviderStateMixin
 
   @override
   void dispose() {
+    super.dispose();
     menuAnimation.dispose();
   }
 
@@ -46,6 +47,7 @@ class _FlowMenuState extends State<FlowMenu> with SingleTickerProviderStateMixin
     // final double buttonSize = MediaQuery.of(context).size.height / menuItems.length / 4;
     return FloatingActionButton(
       elevation: 0,
+      heroTag: 'floatingActionButton ${menuItems.indexOf(icon)}',
       // fillColor: Colors.blue,
       splashColor: Colors.amber[100],
       // shape: const CircleBorder(),

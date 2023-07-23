@@ -1,4 +1,4 @@
-import 'package:camera/camera.dart';
+// import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,11 +20,11 @@ Future<void> main() async {
   await HiveService.hiveDbService.init();
   await VideoHiveService.db.initializeVideoService();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  try {
-    cameras = await availableCameras();
-  } on CameraException catch (e) {
-    debugPrint("$e");
-  }
+  // try {
+  //   cameras = await availableCameras();
+  // } on CameraException catch (e) {
+  //   debugPrint("$e");
+  // }
   runApp(const MyApp());
 }
 
