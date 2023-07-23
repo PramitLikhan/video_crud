@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+
 import '../../../../core/helpers/constants.dart';
 
 class CameraScreen extends StatefulWidget {
@@ -41,12 +42,8 @@ class CameraScreenState extends State<CameraScreen> {
         frontCamera = camera;
       }
     }
-    if (backCamera == null) {
-      backCamera = cameras.first;
-    }
-    if (frontCamera == null) {
-      frontCamera = cameras.last;
-    }
+    backCamera ??= cameras.first;
+    frontCamera ??= cameras.last;
     _cameraController = CameraController(backCamera, ResolutionPreset.medium);
 
     _cameraController.initialize().then((_) {
@@ -77,9 +74,7 @@ class CameraScreenState extends State<CameraScreen> {
                 if (cameraButtonIcon == Icons.camera_alt) {
                   _cameraController.startVideoRecording();
                   cameraButtonIcon = Icons.stop;
-                  setState(() {
-
-                  });
+                  setState(() {});
                 } else if (cameraButtonIcon == Icons.stop) {
                   _cameraController.stopVideoRecording().then((value) {
                     cameraButtonIcon = Icons.camera_alt;

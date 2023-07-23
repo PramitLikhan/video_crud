@@ -6,42 +6,40 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:video_crud/core/extensions/build_context_extension.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 import '../../features/video/domain/entities/video.dart';
 import '../../features/video/presentation/bloc/video_bloc.dart';
-import '../../features/video/presentation/widgets/cameraScreen.dart';
 
 class IOHelper {
-  void launchCamera(BuildContext context) {
-    var bloc = context.read<VideoBloc>();
-    context.push(const CameraScreen()).then((value) async {
-      debugPrint('starting method getting value $value');
-      if (value != null) {
-        debugPrint('value ${value}');
-        final thumbnailFile = await VideoThumbnail.thumbnailFile(
-          video: value,
-          imageFormat: ImageFormat.PNG,
-          maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
-          quality: 25,
-        );
-        bloc.add(VideoAddEvent(
-            Video: VideoModel(
-          file: value,
-          id: bloc.state.videos.length,
-          thumbnail: thumbnailFile!,
-          description: '',
-          title: '',
-        )));
-      } else {
-        bloc.add(const ResetStateEvent());
-      }
-      print('_VideoPageState.launchFileManager ${bloc.state.action} ${bloc.state.detailsState}');
-      bloc.add(const ResetStateEvent());
-    }).onError((error, stackTrace) {
-      debugPrint(error.toString());
-    });
+  static IOHelper? _instance;
+  static IOHelper get io => _instance ?? IOHelper();
+
+  init() {
+    _instance = IOHelper();
+  }
+
+  Future<String?> captureVideo() async {
+    try {
+      final value = await ImagePicker().pickVideo(source: ImageSource.camera);
+      print('_VideoPageState.pickImage ${value.runtimeType}');
+      if (value == null) return null;
+      final imageTemporary = value.path;
+      return imageTemporary;
+    } on PlatformException catch (e) {
+      debugPrint('object: $e');
+    }
+    return null;
+  }
+
+  Future<String?> createThumbnailFile({required String path}) async {
+    final thumbnailFile = await VideoThumbnail.thumbnailFile(
+      video: path,
+      imageFormat: ImageFormat.PNG,
+      maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+      quality: 25,
+    );
+    return thumbnailFile;
   }
 
   Future<File?> compressFile(File file) async {

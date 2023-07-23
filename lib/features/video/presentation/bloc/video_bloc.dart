@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:video_crud/core/helpers/ioHelper.dart';
 
 import '../../../../core/helpers/blocHelper.dart';
 import '../../../../core/services/hive/category/videoHiveService.dart';
@@ -16,9 +17,9 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
     on<ShowDeleteDialogEvent>((event, emit) => showDeleteDialog(event, emit));
     on<ShowDeleteAllDialogEvent>((event, emit) => showDeleteAllDialog(event, emit));
     on<VideoAddEvent>((event, emit) => addVideo(event, emit));
-    // on<EditVideoEvent>((event, emit) => editVideoEvent(event, emit));
     on<RemoveVideoEvent>((event, emit) => removeVideo(event, emit));
-    on<LaunchCameraEvent>((event, emit) => launchCamera(event, emit));
+    on<CaptureVideoEvent>((event, emit) => captureVideo(event, emit));
+    on<ProcessCapturedVideoEvent>((event, emit) => processCapturedVideoEvent(event, emit));
     on<LaunchFileManagerEvent>((event, emit) => launchFileManager(event, emit));
     on<StartDetailsTitleEditEvent>((event, emit) => startDetailsTitleEditEvent(event, emit));
     on<EndDetailsTitleEditEvent>((event, emit) => endDetailsTitleEditEvent(event, emit));
@@ -85,24 +86,20 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
 
   showDeleteAllDialog(ShowDeleteAllDialogEvent event, Emitter<VideoState> emit) => emit(state.copyWith(action: BlocAction.showDeleteAllDialog));
 
-  launchFileManager(LaunchFileManagerEvent event, Emitter<VideoState> emit) {
-    emit(state.copyWith(action: BlocAction.launchFileManager));
-  }
+  launchFileManager(LaunchFileManagerEvent event, Emitter<VideoState> emit) => emit(state.copyWith(action: BlocAction.launchFileManager));
 
-  launchCamera(LaunchCameraEvent event, Emitter<VideoState> emit) {
-    emit(state.copyWith(action: BlocAction.launchCamera));
-  }
+  captureVideo(CaptureVideoEvent event, Emitter<VideoState> emit) => emit(state.copyWith(action: BlocAction.launchCamera));
 
   startDetailsTitleEditEvent(StartDetailsTitleEditEvent event, Emitter<VideoState> emit) => emit(state.copyWith(detailsState: VideoDetails.editTitle));
 
   startDetailsDescriptionEditEvent(StartDetailsDescriptionEditEvent event, Emitter<VideoState> emit) => emit(state.copyWith(detailsState: VideoDetails.editDescription));
 
-  resetStateEvent(ResetStateEvent event, Emitter<VideoState> emit) {
-    emit(state.copyWith(
-      action: BlocAction.unknown,
-      detailsState: VideoDetails.unknown,
-      deleteIndex: -1,
-    ));
+  resetStateEvent(ResetStateEvent event, Emitter<VideoState> emit) => emit(state.copyWith(action: BlocAction.unknown, detailsState: VideoDetails.unknown, deleteIndex: -1));
+
+  processCapturedVideoEvent(ProcessCapturedVideoEvent event, Emitter<VideoState> emit) {
+    IOHelper.io.createThumbnailFile(path: event.capturedVideoFile ?? '').then((value) => value != null
+        ? add(VideoAddEvent(Video: VideoModel(file: event.capturedVideoFile, id: state.videos.length, thumbnail: value, description: '', title: '')))
+        : add(const ResetStateEvent()));
   }
 
   ///-------------------------------------------------------------------------------------------------------------------------------------------------------------------

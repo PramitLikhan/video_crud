@@ -53,7 +53,7 @@ class _FlowMenuState extends State<FlowMenu> with SingleTickerProviderStateMixin
       onPressed: () {
         _updateMenu(icon);
         if (icon == Icons.camera_alt) {
-          bloc.add(const LaunchCameraEvent());
+          bloc.add(const CaptureVideoEvent());
         } else if (icon == Icons.image) {
           bloc.add(const LaunchFileManagerEvent());
         }

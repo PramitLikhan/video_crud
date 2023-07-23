@@ -66,8 +66,16 @@ class RemoveVideoEvent extends VideoEvent {
   List<Object> get props => [Video.id!];
 }
 
-class LaunchCameraEvent extends VideoEvent {
-  const LaunchCameraEvent();
+class CaptureVideoEvent extends VideoEvent {
+  const CaptureVideoEvent();
+
+  @override
+  List<Object> get props => [];
+}
+
+class ProcessCapturedVideoEvent extends VideoEvent {
+  final String? capturedVideoFile;
+  const ProcessCapturedVideoEvent({required this.capturedVideoFile});
 
   @override
   List<Object> get props => [];

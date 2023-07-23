@@ -19,15 +19,16 @@ import '../bloc/video_bloc.dart';
 class VideoPage extends StatefulWidget {
   const VideoPage({Key? key}) : super(key: key);
 
-  // var bloc = VideoBloc();
-
   @override
   State<VideoPage> createState() => _VideoPageState();
 }
 
 class _VideoPageState extends State<VideoPage> {
+  late IOHelper io;
   @override
   void initState() {
+    IOHelper.io.init();
+    io = IOHelper.io;
     context.read<VideoBloc>().add(const VideoInitialLoad());
     super.initState();
   }
@@ -88,9 +89,9 @@ class _VideoPageState extends State<VideoPage> {
               bloc: context.read<VideoBloc>(),
               listener: (context, VideoState state) {
                 if (state.action == BlocAction.launchCamera) {
-                  IOHelper().launchCamera(context);
+                  io.captureVideo().then((value) => value != null ? bloc.add(ProcessCapturedVideoEvent(capturedVideoFile: value ?? '')) : null);
                 } else if (state.action == BlocAction.launchFileManager) {
-                  IOHelper().launchFileManager(context);
+                  io.launchFileManager(context);
                 } else if (state.action == BlocAction.showDeleteAllDialog) {
                   deleteDialog(
                       context: context,
