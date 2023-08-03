@@ -55,14 +55,16 @@ class _VideoDetailsPageState extends State<VideoDetailsPage> {
   Widget build(BuildContext context) {
     var bloc = context.read<VideoBloc>();
     return Scaffold(
+      backgroundColor: context.theme.canvasColor,
       appBar: AppBar(
-          iconTheme: const IconThemeData(color: Colors.black45),
-          title: Text(
-            'Details',
-            style: context.textTheme.headlineMedium,
-          ),
-          elevation: 0,
-          backgroundColor: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.black45),
+        title: Text(
+          'Details',
+          style: context.textTheme.headlineMedium,
+        ),
+        elevation: 0,
+        // backgroundColor: Colors.white,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListView(
@@ -103,18 +105,12 @@ class _VideoDetailsPageState extends State<VideoDetailsPage> {
                         ],
                       ),
                     )
-                  : AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          Center(
-                            widthFactor: context.width,
-                            child: Image.file(File(bloc.state.videos[widget.index].thumbnail!)),
-                          ),
-                          const Center(child: CircularProgressIndicator()),
-                        ],
-                      ),
+                  : Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Container(color: Colors.black, width: context.width, child: Image.file(File(bloc.state.videos[widget.index].thumbnail!), width: context.width)),
+                        const Center(child: CircularProgressIndicator()),
+                      ],
                     ),
             ),
             // Text(getVideoPosition(_controller)),

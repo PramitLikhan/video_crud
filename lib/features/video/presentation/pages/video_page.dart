@@ -38,80 +38,98 @@ class _VideoPageState extends State<VideoPage> {
     var bloc = context.read<VideoBloc>();
     return Scaffold(
       appBar: AppBar(
-          title: Text(
-            'Video CRUD',
-            style: context.textTheme.headlineMedium,
-          ),
-          elevation: 0,
-          backgroundColor: Colors.white),
+        title: Text(
+          'Video CRUD',
+          style: context.textTheme.headlineMedium,
+        ),
+        elevation: 0,
+        // backgroundColor: Colors.white,
+      ),
       body: Container(
-        color: Colors.white,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        color: context.theme.canvasColor,
+        child: Stack(
+          clipBehavior: Clip.none,
+          fit: StackFit.expand,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-              child: BlocBuilder<VideoBloc, VideoState>(
-                builder: (context, state) {
-                  return Row(
-                    children: [
-                      Expanded(
-                        child: BlocBuilder<VideoBloc, VideoState>(
-                          builder: (context, state) {
-                            return Text(
-                              state.videos.isNotEmpty ? 'Manage videos ...' : 'Add New Video ...',
-                              style: context.textTheme.headlineSmall,
-                            );
-                          },
-                        ),
-                      ),
-                      state.videos.isNotEmpty
-                          ? Center(
-                              child: TextButton(
-                                onPressed: () => bloc.add(const ShowDeleteAllDialogEvent()),
-                                child: Text(
-                                  'Delete All',
-                                  style: context.textTheme.headlineSmall!.copyWith(color: Colors.red),
-                                ),
-                              ),
-                            )
-                          : const Wrap(),
-                    ],
-                  );
-                },
+            FittedBox(
+              fit: BoxFit.cover,
+              clipBehavior: Clip.none,
+              child: RotatedBox(
+                quarterTurns: 0,
+                child: LottieBuilder.asset(
+                  'assets/background3.json',
+                  options: LottieOptions(enableMergePaths: false),
+                ),
               ),
             ),
-            BlocBuilder<VideoBloc, VideoState>(
-                builder: (context, state) => Container(
-                      child: state.videos.isEmpty ? Center(child: LottieBuilder.asset('assets/animation.json')) : Container(),
-                    )),
-            BlocConsumer<VideoBloc, VideoState>(
-              bloc: context.read<VideoBloc>(),
-              listener: (context, VideoState state) {
-                if (state.action == BlocAction.launchCamera) {
-                  io.captureVideo().then((value) => value != null ? bloc.add(ProcessCapturedVideoEvent(capturedVideoFile: value ?? '')) : null);
-                } else if (state.action == BlocAction.launchFileManager) {
-                  io.launchFileManager(context);
-                } else if (state.action == BlocAction.showDeleteAllDialog) {
-                  deleteDialog(
-                      context: context,
-                      deleteFunction: () {
-                        bloc.add(const ClearAllDataEvent());
-                        context.pop();
-                      },
-                      message: 'Are you sure ? you can\'t undo this');
-                }
-              },
-              builder: (context, state) {
-                return Expanded(
-                  child: GridView.builder(
-                    itemCount: state.videos.length,
-                    itemBuilder: (context, index) => videoListItem(state.videos[index], context, index),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-                    clipBehavior: Clip.none,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+                  child: BlocBuilder<VideoBloc, VideoState>(
+                    builder: (context, state) {
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: BlocBuilder<VideoBloc, VideoState>(
+                              builder: (context, state) {
+                                return Text(
+                                  state.videos.isNotEmpty ? 'Manage videos ...' : 'Add New Video ...',
+                                  style: context.textTheme.headlineSmall,
+                                );
+                              },
+                            ),
+                          ),
+                          state.videos.isNotEmpty
+                              ? Center(
+                                  child: TextButton(
+                                    onPressed: () => bloc.add(const ShowDeleteAllDialogEvent()),
+                                    child: Text(
+                                      'Delete All',
+                                      style: context.textTheme.headlineSmall!.copyWith(color: context.theme.errorColor),
+                                    ),
+                                  ),
+                                )
+                              : const Wrap(),
+                        ],
+                      );
+                    },
                   ),
-                );
-              },
+                ),
+                BlocBuilder<VideoBloc, VideoState>(
+                    builder: (context, state) => Container(
+                          child: state.videos.isEmpty ? Center(child: LottieBuilder.asset('assets/animation.json')) : Container(),
+                        )),
+                BlocConsumer<VideoBloc, VideoState>(
+                  bloc: context.read<VideoBloc>(),
+                  listener: (context, VideoState state) {
+                    if (state.action == BlocAction.launchCamera) {
+                      io.captureVideo().then((value) => value != null ? bloc.add(ProcessCapturedVideoEvent(capturedVideoFile: value ?? '')) : null);
+                    } else if (state.action == BlocAction.launchFileManager) {
+                      io.launchFileManager(context);
+                    } else if (state.action == BlocAction.showDeleteAllDialog) {
+                      deleteDialog(
+                          context: context,
+                          deleteFunction: () {
+                            bloc.add(const ClearAllDataEvent());
+                            context.pop();
+                          },
+                          message: 'Are you sure ? \nyou can\'t undo this');
+                    }
+                  },
+                  builder: (context, state) {
+                    return Expanded(
+                      child: GridView.builder(
+                        itemCount: state.videos.length,
+                        itemBuilder: (context, index) => videoListItem(state.videos[index], context, index),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                        clipBehavior: Clip.none,
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),
@@ -132,7 +150,7 @@ class _VideoPageState extends State<VideoPage> {
                 context.pop();
                 bloc.add(const ResetStateEvent());
               },
-              message: 'Are you sure you want to delete this video? you can\'t undo this');
+              message: 'Are you sure you want to delete this video? \nyou can\'t undo this');
         }
       },
       builder: (context, state) {
@@ -167,7 +185,7 @@ class _VideoPageState extends State<VideoPage> {
                         children: [
                           Image.file(
                             File(video.thumbnail!),
-                            fit: BoxFit.fitWidth,
+                            fit: BoxFit.cover,
                           ),
                           Container(
                             decoration: const BoxDecoration(
@@ -201,7 +219,7 @@ class _VideoPageState extends State<VideoPage> {
 
   void deleteDialog({required BuildContext context, required Function deleteFunction, required String message}) {
     var bloc = context.read<VideoBloc>();
-    Dialogs.materialDialog(msg: message, title: "Delete", color: Colors.white, context: context, actions: [
+    Dialogs.materialDialog(msg: message, title: "Delete", msgAlign: TextAlign.center, color: Colors.white, context: context, actions: [
       IconsOutlineButton(
         onPressed: () {
           context.pop();

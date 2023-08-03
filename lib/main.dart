@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_crud/core/services/pageService/AppPages.dart';
+import 'package:video_crud/core/services/themeService.dart';
 import 'package:video_crud/features/video/presentation/pages/video_page.dart';
 
 import 'core/app/app_observer.dart';
-import 'core/helpers/constants.dart';
 import 'core/services/hive/category/videoHiveService.dart';
 import 'core/services/hive/hive_service.dart';
 import 'features/video/presentation/bloc/video_bloc.dart';
@@ -36,11 +36,11 @@ class MyApp extends StatelessWidget {
     return BlocProvider(
       create: (context) => VideoBloc(),
       child: MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Video CRUD',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
+        theme: ThemeService().getLightTheme(),
+        darkTheme: ThemeService().getDarkTheme(),
+        themeMode: ThemeMode.light,
         onGenerateRoute: (routeSettings) => AppPages.generateRoute(routeSettings),
         home: const VideoPage(),
       ),
